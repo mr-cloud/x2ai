@@ -1,0 +1,5 @@
+@CHARSET "UTF-8";
+table.dataTable.select tbody tr,
+table.dataTable thead th:first-child {
+  cursor: pointer;
+}

@@ -7,6 +7,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>x2ai Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
+  <properties>
+        <jersey.version>2.20</jersey.version>
+    </properties>
+    
+    
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -14,6 +20,17 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
   </dependencies>
   <build>
     <finalName>x2ai</finalName>
