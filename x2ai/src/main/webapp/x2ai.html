@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8"/>
 <title>x2ai</title>
 <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
 <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet" />
@@ -9,43 +9,41 @@
 	rel="stylesheet" />
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="js/dataTables.bootstrap.min.js"></script>
-<link href="css/buttons.dataTables.min.css" type="text/css"
-	rel="stylesheet" />
-<script type="text/javascript" src="js/dataTables.buttons.min.js"></script>
+
+	<!-- 支持下载 -->
+	    <link href="css/buttons.dataTables.min.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="js/jszip.min.js"></script>
+    <script type="text/javascript" src="js/pdfmake.min.js"></script>
+    <script type="text/javascript" src="js/vfs_fonts.js"></script>
+    <script type="text/javascript" src="js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="js/buttons.print.min.js"></script>
 
 <script type="text/javascript" src="myJs/x2ai.js"></script>
-<link href="myCss/progressbar.css" type="text/css" rel="stylesheet"></link>
+<link href="myCss/progressbar.css" type="text/css" rel="stylesheet"/>
 
 </head>
 <body>
-	<div id="ajaxError"></div>
-
-	<script type="text/javascript">
-    $('#ajaxError').ajaxError(function(e, xhr, settings, exception) {
-            $(this).text('Error in: ' + settings.url + ' - Error: ' +
-                exception + " - Response: " + xhr.responseText);
-    });
-</script>
-	<div id="predicDiv">
-		<select id="predictAlgoName" class="form-control">
+	<h1>PREDICTION SERVICE</h1>
+	<div id="predicDiv" style="margin:10px auto;width: 80%;border: 1px solid black;padding: 5px;" >
+		<select id="predictAlgoName"
+			class="form-control">
 			<option value="randomized">randomized algorithm</option>
 			<option value="RandomForest">RandomForest</option>
 			<option value="AdaBoost">AdaBoost</option>
 			<option value="ExtraTrees">ExtraTrees</option>
 			<option value="GradientBoosting">GradientBoosting</option>
 		</select> &nbsp;&nbsp;
+		<br/><br/>
+
 		<progress max=100></progress>
-		<span id="progress_percent">0</span>%
-
-		<p>
-			Choose : <input type="file" name="upload_file" />
-		</p>
-
-		&nbsp;&nbsp;
-		<button id="upload_btn" class="btn btn-info btn-sm"
-			onclick="upload()">predict</button>
-	</div>
-	<div>
+		<div><span id="progress_percent">0</span>%</div>
+		<br/><br/> 
+		<input type="file" name="upload_file" />
+		<br/><br/>
+		<button id="upload_btn" class="btn btn-info btn-sm" onclick="upload()">predict</button>
+		<br/><br/><br/>
 		<table id="recommendationTable"
 			class="table table-striped table-bordered" cellspacing="0"
 			width="100%">

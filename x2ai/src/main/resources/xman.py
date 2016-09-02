@@ -15,6 +15,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 import XConstant
+import ntpath
 
 # from sklearn.externals import joblib
 
@@ -30,7 +31,7 @@ class XMan:
             XConstant.classifier_GradientBoosting
         ]
 
-    def train(self, algoName=XConstant.randomized_algo, inputData=XConstant.test_data, delims='\s+', dataType=np.str):
+    def train(self, algoName=XConstant.randomized_algo, inputData=XConstant.test_data, delims='\s+', dataType=np.str, model_memento_dir=XConstant.model_memento_dir):
         print('training model: ' + algoName)
         # load data
         print('start loading data...')
@@ -41,7 +42,7 @@ class XMan:
         data = rawData.ix[:, 1:dim[1]].astype('float')
         print('data loaded.')
         # check model in memento
-        mementoPath = XConstant.model_memento_dir + '/' + algoName + XConstant.model_memento_postfix
+        mementoPath = model_memento_dir + algoName + XConstant.model_memento_postfix
         # train data
         print('start training model for ' + algoName + '...')
         clf = self.algo(algoName, data, target)
@@ -52,8 +53,8 @@ class XMan:
                 print('the number of classes trained just now is ' + str(clf.n_classes_) + "\nmodel was abandoned.")
                 return False
 
-            if not os.path.isdir(XConstant.model_memento_dir):
-                os.mkdir(XConstant.model_memento_dir)
+            if not os.path.isdir(model_memento_dir):
+                os.mkdir(model_memento_dir)
             if os.path.isfile(mementoPath):
                 print('clean old model from memento...')
                 os.remove(mementoPath)
@@ -112,7 +113,7 @@ class XMan:
         self.scoreFileHandler.write(str(score))
         self.scoreFileHandler.write('\n')
 
-    def predict(self, algoName=XConstant.randomized_algo, inputData=XConstant.test_data_predict, delims='\s+', dataType=np.str):
+    def predict(self, algoName=XConstant.randomized_algo, inputData=XConstant.test_data_predict, delims='\s+', dataType=np.str, outputData=XConstant.recommendation_dir, model_memento_dir=XConstant.model_memento_dir):
         print('prediction model: ' + algoName)
         # load data
         print('start loading data...')
@@ -121,7 +122,7 @@ class XMan:
         print('size of data: (%d, %d)' % (dim[0], dim[1]))
         data = rawData.ix[:, 0:dim[1]].astype('float')
         # check model in memento
-        mementoPath = XConstant.model_memento_dir + '/' + algoName + XConstant.model_memento_postfix
+        mementoPath = model_memento_dir + algoName + XConstant.model_memento_postfix
         if os.path.isfile(mementoPath):
             print('restoring model from memento...')
             with open(mementoPath, 'rb') as fid:
@@ -153,9 +154,9 @@ class XMan:
             proba = range(0, len(data.index))
             random.shuffle(proba)
             indexSortedProba = [(ele, 1) for ele in proba]
-        if not os.path.isdir(XConstant.recommendation_dir):
-            os.mkdir(XConstant.recommendation_dir)
-        resPath = XConstant.recommendation_dir + '/' + inputData
+        if not os.path.isdir(outputData):
+            os.mkdir(outputData)
+        resPath = outputData  + ntpath.basename(inputData)
         if os.path.isfile(resPath):
             os.remove(resPath)
         print('store recommendation result:')
@@ -187,6 +188,7 @@ if __name__ == '__main__':
     actionArg = sys.argv[1]
     print('action type: ' + str(actionArg))
     if actionArg == XConstant.action_training:
+        # TODO...
         if argsN != 4:
             print('input args error!')
         else:
@@ -196,15 +198,21 @@ if __name__ == '__main__':
             # print('done.')
             xman.train(algoName=algoNameArg, inputData=inputDataArg)
     elif actionArg == XConstant.action_precdition:
-        if argsN != 4:
+        if argsN != 6:
             print('input args error!')
         else:
             algoNameArg = sys.argv[2]
             inputDataArg = sys.argv[3]
+            outputDataArg = sys.argv[4]
+            modelMementoDirArg = sys.argv[5]
+            print("input args:")
+            for arg in sys.argv:
+                print(arg + "\n")
             # TODO
             # print('done')
-            xman.predict(algoName=algoNameArg, inputData=inputDataArg)
+            xman.predict(algoName=algoNameArg, inputData=inputDataArg, outputData=outputDataArg, model_memento_dir=modelMementoDirArg)
     elif actionArg == XConstant.action_train_all:
+        # TODO...
         if argsN != 3:
             print('input args error!')
         else:
