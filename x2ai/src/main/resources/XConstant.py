@@ -5,6 +5,7 @@ recommendation_dir = 'recomms/'
 test_data = 'data_sample.txt'
 test_data_predict = 'data_sample_predict.txt'
 randomized_algo = 'randomized'
+lc_dir = 'learning_curve_dir/'
 
 # classifers supported by XMan
 classifier_RandomForest = 'RandomForest'
@@ -16,3 +17,5 @@ classifier_GradientBoosting = 'GradientBoosting'
 action_training = 'train'
 action_precdition = 'predict'
 action_train_all = 'train_all'
+action_plot_learning_curve = 'lc'
+

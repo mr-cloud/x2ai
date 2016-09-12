@@ -8,6 +8,8 @@ import numpy as np
 import time
 
 import sys
+
+from sklearn import cross_validation
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import ExtraTreesClassifier
@@ -18,6 +20,7 @@ import XConstant
 import ntpath
 
 # from sklearn.externals import joblib
+from plot_learning_curve import plot_learning_curve
 
 class XMan:
 
@@ -170,6 +173,47 @@ class XMan:
             for algo in self.algos:
                 self.train(algoName=algo, inputData=inputData)
 
+    def findEstimator(self, algoName):
+        clf = None
+        if algoName == self.algos[0]:
+            clf = RandomForestClassifier(n_estimators=50)
+        elif algoName == self.algos[1]:
+            clf = AdaBoostClassifier(n_estimators=50)
+        elif algoName == self.algos[2]:
+            clf = ExtraTreesClassifier(n_estimators=50)
+        elif algoName == self.algos[3]:
+            clf = GradientBoostingClassifier(n_estimators=50, learning_rate=1.0, max_depth=1, random_state=0)
+        else:
+            print(algoName + ' not supported yet.')
+        return clf
+
+    def plot_lc(self, algoName, inputData=XConstant.test_data, title='learning curve'):
+        clf = self.findEstimator(algoName)
+        if clf is not None:
+            # load data
+            print('start loading data...')
+            delims = '\s+'
+            dataType = np.str
+            rawData = pd.read_csv(inputData, dtype=dataType, sep=delims)
+            dim = rawData.shape
+            print('size of data: (%d, %d)' % (dim[0], dim[1]))
+            target = rawData.ix[:, 0].astype('float')
+            data = rawData.ix[:, 1:dim[1]].astype('float')
+            print('data loaded.')
+            cv = cross_validation.ShuffleSplit(dim[0], n_iter=10,
+                                               test_size=0.2, random_state=0)
+            plt = plot_learning_curve(clf, title, data, target, ylim=(0.0, 1.01), cv=cv, n_jobs=4)
+            #plt.show()
+            if not os.path.exists(XConstant.lc_dir):
+                os.mkdir(XConstant.lc_dir)
+            plt.savefig(XConstant.lc_dir + algoName + '_' + str(time.time()) + '.png')
+            print('learning curve drawing finished.')
+        else:
+            print('learning curve drawing failed.')
+
+
+
+
 # test
 # xman = XMan()
 # xman.trainAll()
@@ -179,6 +223,11 @@ class XMan:
 # xman.predict(algoName=XConstant.classifier_GradientBoosting)
 #
 # xman.scoreFileHandler.close()
+
+# test learning curve
+# xman = XMan()
+# xman.plot_lc(XConstant.classifier_RandomForest)
+# print('test finished.')
 
 if __name__ == '__main__':
     print('%s was activated.' % __file__)
@@ -218,5 +267,16 @@ if __name__ == '__main__':
         else:
             inputDataArg = sys.argv[2]
             xman.trainAll(inputData=inputDataArg)
+    elif actionArg == XConstant.action_plot_learning_curve:
+        if argsN == 5:
+            estimator = sys.argv[2]
+            inputDataArg = sys.argv[3]
+            title = sys.argv[4]
+            xman.plot_lc(estimator, inputDataArg, title)
+        elif argsN == 3:
+            estimator = sys.argv[2]
+            xman.plot_lc(estimator)
+        else:
+            print('input args error!')
     else:
         print('Sorry, cannot deal with the action you named! We will catch up later!')
