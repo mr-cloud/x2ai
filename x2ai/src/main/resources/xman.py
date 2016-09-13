@@ -21,6 +21,7 @@ import ntpath
 
 # from sklearn.externals import joblib
 from plot_learning_curve import plot_learning_curve
+from grid_search import  grid_search
 
 class XMan:
 
@@ -73,7 +74,14 @@ class XMan:
     def algo(self, algoName, data, target):
         print('initializing classifier...')
         if algoName == self.algos[0]:
-            clf = RandomForestClassifier(n_estimators=50)
+            clf = RandomForestClassifier()
+            # tuning hyper-parameters
+            tuned_parameters = [{
+                'n_estimators': [10, 20, 50, 100, 200],
+                'class_weight': [None, 'balanced'],
+                'min_samples_split': [2, 6, 18, 54],
+                'min_samples_leaf':[1, 3, 10, 30]
+            }]
         elif algoName == self.algos[1]:
             clf = AdaBoostClassifier(n_estimators=50)
         elif algoName == self.algos[2]:
@@ -85,14 +93,17 @@ class XMan:
             return
         self.scoreFileHandler.write('<' + str(time.time()) + '>'  + algoName + ':\n')
         print('classifier initialized.')
-        return self.xFlow(clf, data, target)
+        return self.xFlow(clf, data, target, tuned_parameters)
 
-    def xFlow(self, clf, features, target):
+    def xFlow(self, clf, features, target, tuned_parameters=None):
         # 80% training, 20% testing
         feature_train, feature_test, target_train, target_test = train_test_split(features, target, test_size=0.2)
         print('start training...')
         try:
-            clf = clf.fit(feature_train, target_train)
+            if tuned_parameters is not None:
+                clf = grid_search(clf=clf, X=feature_train, y=target_train, tuned_parameters=tuned_parameters)
+            else:
+                clf = clf.fit(feature_train, target_train)
         except ValueError:
             print('Oops! Cannot train this model with the input data.')
             self.writeScoreTofile('null')
@@ -200,6 +211,14 @@ class XMan:
             target = rawData.ix[:, 0].astype('float')
             data = rawData.ix[:, 1:dim[1]].astype('float')
             print('data loaded.')
+            # tuning hyper-parameters
+            # tuned_parameters = [{
+            #     'n_estimators': [10, 20, 50, 100, 200],
+            #     'class_weight': [None, 'balanced'],
+            #     'min_samples_split': [2, 6, 18, 54],
+            #     'min_samples_leaf':[1, 3, 10, 30]
+            # }]
+            # clf = grid_search(clf=clf, X=data, y=target, tuned_parameters=tuned_parameters)
             cv = cross_validation.ShuffleSplit(dim[0], n_iter=10,
                                                test_size=0.2, random_state=0)
             plt = plot_learning_curve(clf, title, data, target, ylim=(0.0, 1.01), cv=cv, n_jobs=4)
