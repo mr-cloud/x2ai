@@ -46,7 +46,7 @@ print(__doc__)
 def grid_search(clf, X, y, tuned_parameters):
     # scores = ['precision', 'recall']
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.5, random_state=0)
+        X, y, test_size=0.25, random_state=0)
 
     # for score in scores:
     # print("# Tuning hyper-parameters for %s" % score)

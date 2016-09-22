@@ -53,9 +53,75 @@ public class ModelService {
 	}
 	@POST
 	@Path("/train")
-	public String trainModel(){
-		return null;
-	}
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response trainModel(@FormDataParam("file") InputStream in,
+            @FormDataParam("file") FormDataContentDisposition info
+            , @FormDataParam("action") String action
+            , @FormDataParam("algoName") String algoName) throws IOException {
+ 			if((action == null || "".equals(action)) &&
+ 					(algoName == null || "".equals(algoName))){
+ 				LoggerX.println(LOG_TAG, "action and algoName cannot both be empty!");
+ 				return Response.status(Status.BAD_REQUEST).entity("unkown attempt!").build();
+ 			}
+ 			if(action == null || "".equals(action)){
+ 				action = XConstant.ACTION_TRAIN;
+ 			}
+ 			else{
+ 				algoName = "all";
+ 			}
+ 			LoggerX.println(LOG_TAG, "action: " + action + ", algo: " + algoName);
+ 	 		String webRoot = this.servletContext.getRealPath("/") == null? "" : this.servletContext.getRealPath("/");
+ 			String resourceDir = webRoot + XConstant.RESOURCE_DIR;
+ 			File resourceDirFile = new File(resourceDir);
+ 			if(!resourceDirFile.exists()){
+ 				if(!resourceDirFile.mkdirs()){
+ 					LoggerX.error(LOG_TAG, "cannot mkdir for warehouse!");
+ 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Sorry, service crash! Please require later!").build();
+ 				}
+ 			}
+ 	 		File upload = new File(resourceDir + info.getFileName());
+ 			LoggerX.println(LOG_TAG, "file path: " + upload.getAbsolutePath());
+ 			if (upload.exists()){
+ 	            String message = "file: " + upload.getName() + " already exists."
+ 	            		+ "\ndelete the old version.";
+ 	            LoggerX.println(LOG_TAG, message);
+ 	            upload.delete();
+ 	        } 
+ 	        try{
+ 	        	Files.copy(in, upload.toPath());
+ 	        	String url = upload.getAbsolutePath();
+ 	        	/*
+ 	        	 * supply service with respect to the action. 
+ 	        	 */
+ 	        	switch(action){
+ 	        	case XConstant.ACTION_TRAIN:{
+ 	        		if(!this.xMan.train(algoName, url, webRoot)){
+ 	        			String err = "training model failed!";
+ 	        			LoggerX.println(LOG_TAG, err);
+ 	    	        	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(err).build();
+ 	        		}
+ 	        		else{
+ 	        			return Response.status(Status.OK).entity("success").build();
+ 	        		}
+ 	        	}
+ 	        	case XConstant.ACTION_TRAIN_ALL:{
+ 	        		if(!this.xMan.trainAll(url, webRoot)){
+ 	        			String err = "training model failed!";
+ 	        			LoggerX.println(LOG_TAG, err);
+ 	    	        	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(err).build();
+ 	        		}
+ 	        		else{
+ 	        			return Response.status(Status.OK).entity("success").build();
+ 	        		}
+ 	        	}
+ 	        	default: return Response.status(Status.BAD_REQUEST).entity("unkown action!").build();
+ 	        	}
+ 	        }
+ 	        catch(IOException e){
+ 	        	String err = "file upload failed!";
+ 	        	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(err).build();
+ 	        }
+ 		}
 	
 	@POST
 	@Path("/upload")

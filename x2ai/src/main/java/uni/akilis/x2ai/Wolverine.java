@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Wolverine implements XMan{
 	@Override
 	public String predict(String algoName, String examples, String outputDir, String webRoot) {
 		// TODO Auto-generated method stub
-		InterProcessCallerImpl caller = new InterProcessCallerImpl();
+		InterProcessCaller caller = new InterProcessCallerImpl();
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		File engine = new File(classLoader.getResource(XConstant.XMAN_ENGINE).getPath());
 		if(!engine.exists()){
@@ -61,18 +62,69 @@ public class Wolverine implements XMan{
 		public List<String> makeCommand(String... args) {
 			// TODO Auto-generated method stub
 			// get the path of python file.
-			
-			List<String> cmds = Arrays.asList(
-					"python",
-					args[0],
-					args[1],
-					args[2],
-					args[3],
-					args[4],
-					args[5]
-					);
+			List<String> cmds = new ArrayList<>();
+			cmds.add("python");
+			for(String arg: args){
+				cmds.add(arg);
+			}
 			return cmds;
 		}
 		
+	}
+
+	@Override
+	public boolean train(String algoName, String examples, String webRoot) {
+		// TODO Auto-generated method stub
+		InterProcessCaller caller = new InterProcessCallerImpl();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		File engine = new File(classLoader.getResource(XConstant.XMAN_ENGINE).getPath());
+		if(!engine.exists()){
+			LoggerX.println(LOG_TAG, "cannot find engine: " + XConstant.XMAN_ENGINE);
+			return false;
+		}
+		File modelMementoDir = new File(webRoot + XConstant.model_memento_dir);
+		if(!modelMementoDir.exists()){
+			if(!modelMementoDir.mkdirs()){
+				LoggerX.println(LOG_TAG, "cannot mkdir for model memento!");
+				return false;
+			}
+		}
+		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN, algoName, examples, modelMementoDir.getAbsolutePath() + "/");
+		try {
+			caller.processCall(cmd, XConstant.ACTION_TRAIN);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean trainAll(String examples, String webRoot) {
+		// TODO Auto-generated method stub
+		InterProcessCaller caller = new InterProcessCallerImpl();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		File engine = new File(classLoader.getResource(XConstant.XMAN_ENGINE).getPath());
+		if(!engine.exists()){
+			LoggerX.println(LOG_TAG, "cannot find engine: " + XConstant.XMAN_ENGINE);
+			return false;
+		}
+		File modelMementoDir = new File(webRoot + XConstant.model_memento_dir);
+		if(!modelMementoDir.exists()){
+			if(!modelMementoDir.mkdirs()){
+				LoggerX.println(LOG_TAG, "cannot mkdir for model memento!");
+				return false;
+			}
+		}
+		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN_ALL, examples, modelMementoDir.getAbsolutePath() + "/");
+		try {
+			caller.processCall(cmd, XConstant.ACTION_TRAIN_ALL);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

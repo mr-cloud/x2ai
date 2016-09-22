@@ -11,6 +11,7 @@ public class XConstant {
 	 */
 	public static final String ACTION_PREDICT = "predict";
 	public static final String ACTION_TRAIN = "train";
+	public static final String ACTION_TRAIN_ALL = "train_all";
 	/**
 	 * x2ai engine directory.
 	 */
