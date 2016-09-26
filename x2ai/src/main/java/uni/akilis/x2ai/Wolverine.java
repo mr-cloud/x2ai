@@ -89,7 +89,7 @@ public class Wolverine implements XMan{
 				return false;
 			}
 		}
-		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN, algoName, examples, modelMementoDir.getAbsolutePath() + "/");
+		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN, algoName, examples, modelMementoDir.getAbsolutePath() + "/", webRoot);
 		try {
 			caller.processCall(cmd, XConstant.ACTION_TRAIN);
 		} catch (IOException e) {
@@ -117,7 +117,7 @@ public class Wolverine implements XMan{
 				return false;
 			}
 		}
-		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN_ALL, examples, modelMementoDir.getAbsolutePath() + "/");
+		List<String> cmd = caller.makeCommand(engine.getAbsolutePath(), XConstant.ACTION_TRAIN_ALL, examples, modelMementoDir.getAbsolutePath() + "/", webRoot);
 		try {
 			caller.processCall(cmd, XConstant.ACTION_TRAIN_ALL);
 		} catch (IOException e) {

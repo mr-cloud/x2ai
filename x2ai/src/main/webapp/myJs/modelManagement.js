@@ -74,10 +74,22 @@ function upload(){
 		contentType: false,
 		processData: false,
 		success: function(response){
+			// inferred as string when succeeded.
+			console.log(response);
 			alert('model training succeed!');
+			// show score log file.
+			log = response.replace(/\t/g, '    ')
+			           .replace(/  /g, '&nbsp; ')
+			           .replace(/  /g, ' &nbsp;') // second pass
+			                                      // handles odd number of spaces, where we 
+			                                      // end up with "&nbsp;" + " " + " "
+			           .replace(/\r\n|\n|\r/g, '<br />');
+            var logDiv = document.getElementById("logDiv");
+            logDiv.innerHTML = log;
 			state = STATE_READY;
 		},
 		error: function(response){
+			// inferred as json object when failed.
 			console.log(response);
 			var error = "error";
 			console.log(response.status);

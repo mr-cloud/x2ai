@@ -36,5 +36,9 @@ public class XConstant {
 	 * model memento directory
 	 */
 	public static String model_memento_dir = "model-memento/";
+	/**
+	 * score log file name
+	 */
+	public static String SCORE_FILE = "score.txt";
 	
 }

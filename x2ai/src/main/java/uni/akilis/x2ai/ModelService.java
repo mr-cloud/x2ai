@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -101,7 +100,25 @@ public class ModelService {
  	    	        	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(err).build();
  	        		}
  	        		else{
- 	        			return Response.status(Status.OK).entity("success").build();
+ 	        			String log = "";
+ 	        			/*
+ 	        			 * return score log file.
+ 	        			 */
+ 	        			File score = new File(webRoot + XConstant.SCORE_FILE);
+ 	        			if(!score.exists()){
+ 	        				log = "log file does not exist!";
+ 	        			}
+ 	        			else{
+ 	 	        			StringBuffer sb = new StringBuffer();
+ 	 	        			BufferedReader bfr = new BufferedReader(new FileReader(score));
+ 	 	        			String line;
+ 	 	        			while((line = bfr.readLine()) != null){
+ 	 	        				sb.append(line + "\n");
+ 	 	        			}
+ 	 	        			log = sb.toString();
+ 	 	        			bfr.close();
+ 	        			}
+ 	        			return Response.status(Status.OK).entity(log).build();
  	        		}
  	        	}
  	        	case XConstant.ACTION_TRAIN_ALL:{
@@ -111,8 +128,25 @@ public class ModelService {
  	    	        	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(err).build();
  	        		}
  	        		else{
- 	        			return Response.status(Status.OK).entity("success").build();
- 	        		}
+	        			String log = "";
+ 	        			/*
+ 	        			 * return score log file.
+ 	        			 */
+ 	        			File score = new File(webRoot + XConstant.SCORE_FILE);
+ 	        			if(!score.exists()){
+ 	        				log = "log file does not exist!";
+ 	        			}
+ 	        			else{
+ 	 	        			StringBuffer sb = new StringBuffer();
+ 	 	        			BufferedReader bfr = new BufferedReader(new FileReader(score));
+ 	 	        			String line;
+ 	 	        			while((line = bfr.readLine()) != null){
+ 	 	        				sb.append(line + "\n");
+ 	 	        			}
+ 	 	        			log = sb.toString();
+ 	 	        			bfr.close();
+ 	        			}
+ 	        			return Response.status(Status.OK).entity(log).build(); 	        		}
  	        	}
  	        	default: return Response.status(Status.BAD_REQUEST).entity("unkown action!").build();
  	        	}

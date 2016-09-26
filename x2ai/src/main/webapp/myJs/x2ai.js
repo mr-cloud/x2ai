@@ -61,7 +61,7 @@ function upload(){
 		contentType: false,
 		processData: false,
 		success: function(response){
-			alert('file upload complete!\nurl: ' + response);
+			alert('file uploaded and prediction finished!\nresults url: ' + response);
 			resultUrl = response;
 			getRecomms();
 		},
@@ -101,7 +101,7 @@ function getRecomms() {
 			buttons: [
 			          {
 			        	  extend: 'excel',
-			        	  text: '下载表格',
+			        	  text: 'download',
 			          }
 			          ],
 			          language: {

@@ -29,6 +29,11 @@ if __name__ == '__main__':
     print('%s was activated.' % __file__)
     class XMan:
 
+        def setWebRoot(self, webRoot=''):
+            if self.scoreFileHandler is not None:
+                self.scoreFileHandler.close()
+            self.scoreFileHandler = open(webRoot + XConstant.score_file_name, mode='a')
+
         def __init__(self, inputFileName=XConstant.test_data):
             self.inputFileName = inputFileName
             self.scoreFileHandler = open(XConstant.score_file_name, mode='a')
@@ -81,12 +86,12 @@ if __name__ == '__main__':
             print('initializing classifier...')
             tuned_parameters = None
             if algoName == self.algos[0]:
-                clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=100, min_samples_split=100)
+                clf = RandomForestClassifier(n_estimators=50)
                 # tuning hyper-parameters
                 # tuned_parameters = [{
-                #    'n_estimators': [10, 20, 50, 100, 200],
-                #    'min_samples_split': [2, 10, 30, 100],
-                #    'min_samples_leaf':[1, 3, 10, 30, 100, 300]
+                #     'n_estimators': [10, 20, 50, 100, 200],
+                #     'min_samples_split': [2, 10, 30, 100],
+                #     'min_samples_leaf':[1, 3, 10, 30, 100, 300]
                 # }]
             elif algoName == self.algos[1]:
                 clf = AdaBoostClassifier(n_estimators=50)
@@ -97,7 +102,8 @@ if __name__ == '__main__':
             else:
                 print(algoName + ' not supported yet.')
                 return
-            self.scoreFileHandler.write('<' + str(time.time()) + '>'  + algoName + ':\n')
+            datestr = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+            self.scoreFileHandler.write('[' + str(datestr) + '] ' + algoName + ':\n')
             print('classifier initialized.')
             return self.xFlow(clf, data, target, tuned_parameters)
 
@@ -128,7 +134,7 @@ if __name__ == '__main__':
             print('finished testing on all examples!')
             print('the average accuracy on all examples is ' + str(accuracyAll))
             # training results are stored to file.
-            self.writeScoreTofile("cv:" + str(accuracyCv) + ",all:" + str(accuracyAll) + '\n')
+            self.writeScoreTofile("[accuracy] cv:" + str(accuracyCv) + ",all:" + str(accuracyAll) + '\n')
             self.writeScoreTofile("test report:\n" + test_report)
             return clf
 
@@ -136,6 +142,8 @@ if __name__ == '__main__':
             self.scoreFileHandler.write(str(score))
             self.scoreFileHandler.write('\n')
 
+        # specific service in specific filed.
+        # you should implement this function according to your own business.
         def oneHotEncoder(self, features):
             # change float to int for some columns, e.g. 'city'.
             intColsInd = [5]
@@ -143,7 +151,7 @@ if __name__ == '__main__':
             for i, col in enumerate(intColsInd):
                 features.ix[:, col] = intCols.ix[:, i]
             # one-hot-encoder for categorical features.
-            ohe = OneHotEncoder(categorical_features=[5], sparse=False)
+            ohe = OneHotEncoder(categorical_features=intColsInd, sparse=False)
             columns = features.columns.values.tolist()
             for popper in intColsInd:
                 columns.pop(popper)
@@ -285,6 +293,13 @@ if __name__ == '__main__':
 
     if actionArg == XConstant.action_training:
         # TODO...
+        if argsN == 6:
+            algoNameArg = sys.argv[2]
+            inputDataArg = sys.argv[3]
+            mementoDirArg = sys.argv[4]
+            webRootArg = sys.argv[5]
+            xman.setWebRoot(webRootArg)
+            xman.train(algoName=algoNameArg, inputData=inputDataArg, model_memento_dir=mementoDirArg)
         if argsN == 5:
             algoNameArg = sys.argv[2]
             inputDataArg = sys.argv[3]
@@ -299,6 +314,7 @@ if __name__ == '__main__':
             xman.train(algoName=algoNameArg)
         else:
             print('input args error!')
+        xman.scoreFileHandler.close()
 
     elif actionArg == XConstant.action_precdition:
         if argsN == 6:
@@ -319,7 +335,13 @@ if __name__ == '__main__':
             print('input args error!')
 
     elif actionArg == XConstant.action_train_all:
-        if argsN == 4:
+        if argsN == 5:
+            inputDataArg = sys.argv[2]
+            mementoDirArg = sys.argv[3]
+            webRootArg = sys.argv[4]
+            xman.setWebRoot(webRootArg)
+            xman.trainAll(inputData=inputDataArg, model_memento_dir=mementoDirArg)
+        elif argsN == 4:
             inputDataArg = sys.argv[2]
             mementoDirArg = sys.argv[3]
             xman.trainAll(inputData=inputDataArg, model_memento_dir=mementoDirArg)
@@ -330,6 +352,7 @@ if __name__ == '__main__':
             xman.trainAll()
         else:
             print('input args error!')
+        xman.scoreFileHandler.close()
 
     elif actionArg == XConstant.action_plot_learning_curve:
         if argsN == 5:
@@ -349,4 +372,3 @@ if __name__ == '__main__':
     else:
         print('Sorry, cannot deal with the action you named! We will catch up later!')
 
-    xman.scoreFileHandler.close()
