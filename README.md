@@ -13,4 +13,4 @@
   * _XETLer_: data ETL tool implemented with java.
   
 **blueprint with future work**  
-![](/design.png "Title")
+![](x2ai/src/main/webapp/pic/design.jpg?raw=true "Title")
