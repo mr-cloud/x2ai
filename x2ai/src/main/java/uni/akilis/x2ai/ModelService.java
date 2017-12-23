@@ -223,37 +223,7 @@ public class ModelService {
         			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Sorry, service crash! Please require later!").build();
         		}
         		else{
-        			Map<Integer, String> itemMap = new HashMap<>();
-        			BufferedReader itemReader = new BufferedReader(new FileReader(upload));
-        			String line;
-        			int cnt = 0;
-        			while((line = itemReader.readLine()) != null){
-        				line = line.trim();
-        				if(!"".equals(line))
-        					itemMap.put(cnt++, line);
-        			}
-        			itemReader.close();
-        			BufferedReader rankings = new BufferedReader(new FileReader(rankingsUrl));
-        			File rst = new File(outputDir + String.valueOf(System.currentTimeMillis()) + "_" + algoName + "_" + info.getFileName());
-        			BufferedWriter rstWriter = new BufferedWriter(new FileWriter(rst));
-        			while((line = rankings.readLine()) != null){
-        				String[] words = line.split("\\s+");
-        				if(words.length != 2){
-        					continue;
-        				}
-        				// TODO
-        				int ind = Integer.parseInt(words[0]);
-        				double score = Double.parseDouble(words[1]);
-        				if(!itemMap.containsKey(ind)){
-        					continue;
-        				}
-        				String item = itemMap.get(ind);
-        				rstWriter.write(item + "\t" + score);
-        				rstWriter.newLine();
-        			}
-        			rankings.close();
-        			rstWriter.close();
-        			return Response.status(Status.OK).entity(rst.getAbsolutePath()).build();
+        			return Response.status(Status.OK).entity(rankingsUrl).build();
         		}
         	}
         	default: return Response.status(Status.BAD_REQUEST).entity("unkown action!").build();

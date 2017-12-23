@@ -63,7 +63,7 @@ public class Wolverine implements XMan{
 			// TODO Auto-generated method stub
 			// get the path of python file.
 			List<String> cmds = new ArrayList<>();
-			cmds.add("python");
+			cmds.add(XConstant.PYTHON_ENV);
 			for(String arg: args){
 				cmds.add(arg);
 			}

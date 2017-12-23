@@ -1,6 +1,6 @@
 import os
 
-import cPickle
+import _pickle as cPickle
 import random
 
 import pandas as pd
@@ -207,7 +207,7 @@ if __name__ == '__main__':
             else:
                 # recommended by random algorithm.
                 print(algoName + ' not supported yet.\nrecommended by random.')
-                proba = range(0, len(data.index))
+                proba = list(range(0, len(data.index)))
                 random.shuffle(proba)
                 indexSortedProba = [(ele, 1) for ele in proba]
             if not os.path.isdir(outputData):

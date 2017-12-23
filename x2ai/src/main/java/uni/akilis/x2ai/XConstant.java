@@ -32,7 +32,8 @@ public class XConstant {
 	 * data warehouse to store IO files.
 	 */
 	public static final String RESOURCE_DIR = "warehouse/";
-	/**
+    public static final String PYTHON_ENV = "python";
+    /**
 	 * model memento directory
 	 */
 	public static String model_memento_dir = "model-memento/";

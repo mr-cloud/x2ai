@@ -25,6 +25,7 @@ public interface XETLer {
 			LoggerX.println("prediction input file for testing does not exist!");
 			return null;
 		}
-		return url.getPath();
+
+		return items;
 	}
 }
