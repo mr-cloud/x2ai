@@ -5,12 +5,17 @@
 
 **Architecture**  
  * front end
-  * _html/css/js/jQuery_
+     * _html/css/js/jQuery_
  * back end
-  * _Jersey_: RESTful web service.
+     * _Jersey_: RESTful web service.
  * recommendation engine
-  * _XMan_: powered by scikit-learn.
-  * _XETLer_: data ETL tool implemented with java.
-  
+     * _XMan_: powered by scikit-learn.
+     * _XETLer_: data ETL tool implemented with java.
+
+**Deployment**
+- JDK 1.8
+- Tomcat 8
+- Anaconda 3
+
 **blueprint with future work**  
-![](x2ai/src/main/webapp/pic/design.jpg?raw=true "Title")
+![blueprint](x2ai/src/main/webapp/pic/design.jpg?raw=true "Title")
